@@ -1,0 +1,142 @@
+/* pulse dot for online status */
+/* online users table */
+.wpla-online-users table {
+    border: none;
+}
+.wpla-online-users table tr td {
+    vertical-align: middle;
+}
+.wpla-online-users .wpla-user-profile {
+    display: table;
+}
+.wpla-online-users .wpla-user-profile .wpla-user-avatar,
+.wpla-online-users .wpla-user-profile .wpla-user-info {
+    display: table-cell;
+    vertical-align: middle;
+}
+.wpla-online-users .wpla-user-profile .wpla-user-avatar {
+    position: relative;
+}
+.wpla-online-users .wpla-user-avatar .wpla-status {
+    position: absolute;
+    top: 0;
+    right: -3px;
+}
+.wpla-online-users .wpla-user-profile .wpla-user-avatar img {
+    border: 1px solid #c3c4c7;
+    border-radius: 50%;
+    float: left;
+}
+.wpla-online-users .wpla-user-profile .wpla-user-info {
+    padding-left: 10px;
+}
+.wpla-online-users .wpla-user-profile .wpla-user-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: #0D314A;
+    display: block;
+}
+.wpla-online-users .wpla-user-profile .wpla-user-email {
+    color: #3D5A6E;
+}
+
+.wpla-online-users .wpla-user-status {
+    text-align: center;
+}
+.wpla-online-users .wpla-user-status .wpla-online-time {
+    display: block;
+}
+.wpla-online-users .wpla-user-actions {
+    text-align: right;
+}
+.wpla-online-users .wpla-user-actions a {
+    /* display: table-cell;
+    vertical-align: middle;
+    line-height: 1; */
+}
+/* loader */
+.wpla-loader {
+    display: flex;
+    padding: 16px 8px;
+    flex-direction: column;
+    align-items: center;
+}
+.wpla-loader .wpla-loader-text {
+    font-weight: 500;
+    margin-top: 14px;
+    color: #0D314A;
+}
+
+.wpla-status {
+    display: inline-block;
+    vertical-align: 1px;
+    width: 16px;
+    height: 16px;
+    background: #2AB27A;
+    color: transparent;
+    border-radius: 100%;
+    flex: 0 0 auto;
+}
+.wpla-status.wpla-red {
+    background: #e60000;
+}
+.wpla-status.wpla-orange {
+    background: #ff9900;
+}
+.wpla-status.wpla-green {
+    background: #2AB27A;
+}
+.wpla-pulse {
+    position: relative;
+    display: inline-block;
+    vertical-align: 1px;
+    width: 16px;
+    height: 16px;
+    background: #2AB27A;
+    color: transparent;
+    border-radius: 100%;
+    flex: 0 0 auto;
+    animation: opacity-animation 1s linear;
+}
+.wpla-pulse:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(42, 178, 122, 0.2);
+    border-radius: 100%;
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(2);
+    animation: pulse-animation 3s infinite;
+}
+.wpla-pulse.wpla-red {
+    background: #e60000;
+}
+.wpla-pulse.wpla-orange {
+    background: #ff9900;
+}
+.wpla-pulse.wpla-green {
+    background: #2AB27A;
+}
+/* pulse animation */
+@keyframes opacity-animation {
+    0% {
+        opacity: 0;
+    }
+}
+@keyframes pulse-animation {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.8;
+    }
+    70% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(3);
+    }
+    to {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+}
