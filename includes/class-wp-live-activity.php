@@ -30,13 +30,19 @@ class WPLiveActivity {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wp-live-activity-scripts.php';
 
 		/**
-		 * users
+		 * active online users
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wp-live-activity-users.php';
+
+		/**
+		 * live comments
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wp-live-activity-comments.php';
 	}
 
 	private function define_admin_hooks() {
 		$plugin_scripts = new WPLiveActivityScripts();
-		$wpla_users_activity = new WPLiveActivityUsersActivity();
+		$wpla_live_activity_users = new WPLiveActivityUsers();
+		$wpla_live_activity_comments = new WPLiveActivityComments();
 	}
 }

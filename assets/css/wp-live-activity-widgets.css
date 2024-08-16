@@ -39,12 +39,15 @@
 .wpla-online-users .wpla-user-profile .wpla-user-email {
     color: #3D5A6E;
 }
-
 .wpla-online-users .wpla-user-status {
-    text-align: center;
+    /* text-align: center; */
 }
-.wpla-online-users .wpla-user-status .wpla-online-time {
-    display: block;
+.wpla-online-users .wpla-user-status > strong {
+    color: #fff;
+    line-height: 1;
+    display: inline-block;
+    border-radius: 3px;
+    padding: 2px 4px;
 }
 .wpla-online-users .wpla-user-actions {
     text-align: right;
@@ -111,13 +114,20 @@
     transform: translate(-50%, -50%) scale(2);
     animation: pulse-animation 3s infinite;
 }
-.wpla-pulse.wpla-red {
+.wpla-pulse.wpla-red,
+.wpla-user-status .less-than-day,
+.wpla-user-status .less-than-week,
+.wpla-user-status .less-than-month,
+.wpla-user-status .less-than-year,
+.wpla-user-status .more-than-year {
     background: #e60000;
 }
-.wpla-pulse.wpla-orange {
+.wpla-pulse.wpla-orange,
+.wpla-user-status .less-than-hour {
     background: #ff9900;
 }
-.wpla-pulse.wpla-green {
+.wpla-pulse.wpla-green,
+.wpla-user-status .just-now {
     background: #2AB27A;
 }
 /* pulse animation */

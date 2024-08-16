@@ -18,16 +18,19 @@ jQuery(document).ready(function($) {
         // }
         if (data.wpla_online_users) {
             console.log("heartbeat-tick >> wpla_online_users:", data.wpla_online_users);
-            
             // Update the frontend with the online users list
             var userList = '<table class="widefat striped">';
             $.each(data.wpla_online_users, function(index, user) {
+                var statusHTML = '';
+                if (user.time_ago.class === 'just-now') {
+                    statusHTML = `<span class="wpla-status wpla-green"></span>`;
+                }
                 userList += `
                 <tr>
                     <td>
                         <div class="wpla-user-profile">
                             <div class="wpla-user-avatar">
-                                <span class="wpla-status wpla-green"></span>
+                                ${statusHTML}
                                 ${user.avatar}
                             </div>
                             <div class="wpla-user-info">
@@ -38,17 +41,14 @@ jQuery(document).ready(function($) {
                     </td>
                     <td>
                         <div class="wpla-user-status">
-                            <strong>${ user.time_ago }</strong>
+                            <strong class="${ user.time_ago.class }">Online: ${ user.time_ago.value }</strong>
                             <div><strong>${ user.last_active_datetime }</strong></div>
                         </div>
                     </td>
                     <td>
                         <div class="wpla-user-actions">
                             <a href="${user.edit_link}">
-                                <span class="dashicons dashicons-edit"><span class="screen-reader-text">Edit</span></span>
-                            </a>
-                            <a href="#" class="button-link-delete">
-                                <span class="dashicons dashicons-trash"><span class="screen-reader-text">Clear Session</span></span>
+                                <span class="dashicons dashicons-visibility"><span class="screen-reader-text">View User</span></span>
                             </a>
                         </div>
                     </td>
