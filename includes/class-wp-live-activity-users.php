@@ -6,9 +6,9 @@ class WPLiveActivityUsers {
     private $date_format;
     private $time_format;
 
-	public function __construct() {
-        $this->date_format = get_option('date_format');
-        $this->time_format = get_option('time_format');
+	public function __construct($dateFormat, $timeFormat) {
+        $this->date_format = $dateFormat;
+        $this->time_format = $timeFormat;
 
         add_filter( 'heartbeat_received', array( $this, 'wpla_heartbeat_received_users_callback' ), 10, 2 );
         add_action( 'wp_dashboard_setup', array( $this, 'wpla_register_users_dashboard_widget' ) );
@@ -28,74 +28,66 @@ class WPLiveActivityUsers {
         }
 
         if ( isset( $data['wpla_check_online_users'] ) && $data['wpla_check_online_users'] ) {
-            $current_timestamp = current_time( 'timestamp' );
-            $timeframe = 48 * 60 * 60; // For example, 60 minutes
-            
-            // $args = array(
-            //     'meta_key'     => '_wpla_last_active',
-            //     'meta_value'   => $current_timestamp - $timeframe,
-            //     'meta_compare' => '>=',
-            //     'fields'       => array( 'ID', 'display_name', 'user_email', 'user_login' )
-            // );
-
-            $args = array(
-                'meta_query' => array(
-                    array(
-                        'key'     => '_wpla_last_active',
-                        'value'   => $current_timestamp - $timeframe,
-                        'compare' => '>=',
-                        'type'    => 'NUMERIC'
-                    )
-                ),
-                'fields'       => array('ID', 'display_name', 'user_email', 'user_login'),
-                'orderby'      => 'meta_value_num', // Order by numeric meta value
-                'meta_key'     => '_wpla_last_active', // Meta key for ordering
-                'order'        => 'DESC',
-                'number'       => 10,
-            );
-        
-            $user_query = new WP_User_Query( $args );
-        
-            if ( ! empty( $user_query->results ) ) {
-                $online_users = array();
-                foreach ( $user_query->results as $user ) {
-                    $last_active_timestamp = get_user_meta( $user->ID, '_wpla_last_active', true );
-                    $last_active_date = date_i18n($this->date_format, $last_active_timestamp);
-                    $last_active_time = date_i18n($this->time_format, $last_active_timestamp);
-                    $last_active_datetime = $last_active_date . ' ' . $last_active_time;
-
-                    $avatar = get_avatar( $user->ID, 50 );
-                    // $user_info = get_userdata( $user->ID );
-                    
-                    $edit_link = get_edit_user_link( $user->ID );
-
-                    $time_ago = $this->time_ago($current_timestamp, $last_active_timestamp);
-
-                    $online_users[] = array(
-                        'ID' => $user->ID,
-                        'display_name' => $user->display_name,
-                        'user_email' => $user->user_email,
-                        'user_login' => $user->user_login,
-                        'avatar' => $avatar,
-                        'date_format' => $date_format,
-                        'time_format' => $time_format,
-                        'last_active_date' => $last_active_date,
-                        'last_active_time' => $last_active_time,
-                        'last_active_timestamp' => $last_active_timestamp,
-                        'last_active_datetime' => $last_active_datetime,
-                        'time_ago' => $time_ago,
-                        'edit_link' => $edit_link,
-                    );
-                }
-                // Send the online users data back to the frontend
-                $response['wpla_online_users'] = $online_users;
-            } else {
-                $response['wpla_online_users'] = array();
-            }
+            $online_users = $this->wpla_get_users();
+            $response["wpla_online_users"] = $online_users;
+        } else {
+            $response['wpla_online_users'] = array();
         }
 
         return $response;
 
+    }
+
+    public function wpla_get_users() {
+        $current_timestamp = current_time( 'timestamp' );
+        $timeframe = 48 * 60 * 60; // For example, 60 minutes
+        $number_users = apply_filters( 'wpla_filter_number_users', 10 );
+        $args = array(
+            'meta_query' => array(
+                array(
+                    'key'     => '_wpla_last_active',
+                    'value'   => $current_timestamp - $timeframe,
+                    'compare' => '>=',
+                    'type'    => 'NUMERIC'
+                )
+            ),
+            'fields'       => array('ID', 'display_name', 'user_email', 'user_login'),
+            'orderby'      => 'meta_value_num', // Order by numeric meta value
+            'meta_key'     => '_wpla_last_active', // Meta key for ordering
+            'order'        => 'DESC',
+            'number'       => $number_users,
+        );
+        $user_query = new WP_User_Query( $args );
+        $online_users = array();
+        if ( ! empty( $user_query->results ) ) {
+            foreach ( $user_query->results as $user ) {
+                $last_active_timestamp = get_user_meta( $user->ID, '_wpla_last_active', true );
+                $last_active_date = date_i18n($this->date_format, $last_active_timestamp);
+                $last_active_time = date_i18n($this->time_format, $last_active_timestamp);
+                $last_active_datetime = $last_active_date . ' ' . $last_active_time;
+                $user_avatar_size = apply_filters( 'wpla_user_avatar_size', 50 );
+                $avatar = get_avatar( $user->ID, $user_avatar_size );
+                $edit_link = get_edit_user_link( $user->ID );
+                $time_ago = $this->time_ago($current_timestamp, $last_active_timestamp);
+                $online_users[] = array(
+                    'ID' => $user->ID,
+                    'display_name' => $user->display_name,
+                    'user_email' => $user->user_email,
+                    'user_login' => $user->user_login,
+                    'avatar' => $avatar,
+                    'date_format' => $this->date_format,
+                    'time_format' => $this->time_format,
+                    'last_active_date' => $last_active_date,
+                    'last_active_time' => $last_active_time,
+                    'last_active_timestamp' => $last_active_timestamp,
+                    'last_active_datetime' => $last_active_datetime,
+                    'time_ago' => $time_ago,
+                    'edit_link' => $edit_link,
+                );
+            }
+        }
+
+        return $online_users;
     }
 
     public function wpla_register_users_dashboard_widget() {

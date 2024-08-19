@@ -1,7 +1,10 @@
 jQuery(document).ready(function($) {
     // Set up Heartbeat API settings
-    // var heartbeatInterval = wpla_params.wpla_interval;
-    var current_user_id = wpla_params.wpla_current_user_id;
+    console.log("wpla_users_params", wpla_users_params);
+    var current_user_id = wpla_users_params.wpla_current_user_id;
+
+    var generated_table = wpla_generate_users_table(wpla_users_params.wpla_users)
+    $('#wpla-online-users').html(generated_table);
 
     // Hook into Heartbeat API
     $(document).on('heartbeat-send', function(e, data) {
@@ -12,15 +15,16 @@ jQuery(document).ready(function($) {
 
     // Handle data received from the server
     $(document).on('heartbeat-tick', function(e, data) {
-        // do something with active_user
-        // if ( data.active_user ) {
-        //     console.log("tick > active_user:", data.active_user);
-        // }
-        if (data.wpla_online_users) {
-            console.log("heartbeat-tick >> wpla_online_users:", data.wpla_online_users);
-            // Update the frontend with the online users list
-            var userList = '<table class="widefat striped">';
-            $.each(data.wpla_online_users, function(index, user) {
+        console.log("users tick", data);
+        var generated_table = wpla_generate_users_table(data.wpla_online_users)
+        $('#wpla-online-users').html(generated_table);
+    });
+
+    function wpla_generate_users_table(data) {
+        var userList = '';
+        if (data) {
+            userList += '<table class="widefat striped">';
+            $.each(data, function(index, user) {
                 var statusHTML = '';
                 if (user.time_ago.class === 'just-now') {
                     statusHTML = `<span class="wpla-status wpla-green"></span>`;
@@ -55,7 +59,8 @@ jQuery(document).ready(function($) {
                 </tr>`;
             });
             userList += '</table>';
-            $('#wpla-online-users').html(userList);
         }
-    });
+        
+        return userList
+    }
 });

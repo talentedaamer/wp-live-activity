@@ -12,6 +12,11 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
 
+ /**
+  * TODOS
+  * On plugin deactivation remove users meta
+  * try localstorage to store users and comments, also rmove on plugin deactivation
+  */
 /**
  * exit if file is accessed directly
  */
@@ -55,7 +60,8 @@ require WPLA_DIR_PATH . 'includes/class-wp-live-activity.php';
 function wpla_run_wp_live_activity() {
 	$plugin = new WPLiveActivity();
 }
-wpla_run_wp_live_activity();
+// wpla_run_wp_live_activity();
+add_action( 'init', 'wpla_run_wp_live_activity' );
 
 function wp_heartbeat_settings_3242( $settings ) {
     $settings['interval'] = 15; //Anything between 15-120
@@ -63,8 +69,23 @@ function wp_heartbeat_settings_3242( $settings ) {
 }
 add_filter( 'heartbeat_settings', 'wp_heartbeat_settings_3242' );
 
-// add_action( 'init', 'process_post' );
-// function process_post() {
+function wpdocs_func_name() {
+    return 5;
+}
+add_filter( 'wpla_filter_number_users', 'wpdocs_func_name' );
+
+function wpla_user_avatar_size_callback() {
+    return 40;
+}
+add_filter( 'wpla_user_avatar_size', 'wpla_user_avatar_size_callback' );
+
+function wpla_comment_user_avatar_size_callback() {
+    return 40;
+}
+add_filter( 'wpla_comment_user_avatar_size', 'wpla_comment_user_avatar_size_callback' );
+
+add_action( 'init', 'process_post' );
+function process_post() {
 //     $users = array(
 //         array('username' => 'johnsmith', 'email' => 'john.smith@example.com', 'display_name' => 'John Smith'),
 //         array('username' => 'janeDoe', 'email' => 'jane.doe@example.com', 'display_name' => 'Jane Doe'),
@@ -125,5 +146,20 @@ add_filter( 'heartbeat_settings', 'wp_heartbeat_settings_3242' );
 //             echo "Error creating user $username: " . $user_id->get_error_message() . "<br>";
 //         }
 //     }
-//     wp_die();
-// }
+
+    // $transient_key = 'cached_comments';
+    // $transient_expiration = 2 * 60; // 1 hour
+    // $comments = get_transient($transient_key);
+    // if ($comments === false) {
+    //     print_r("inside if");
+    //     $args = array(
+    //         'status' => 'approve',
+    //         'number' => 10,
+    //     );
+    //     $comments = get_comments($args);
+    //     set_transient($transient_key, $comments, $transient_expiration);
+    // }
+
+    // print_r(count($comments));
+    // wp_die();
+}
