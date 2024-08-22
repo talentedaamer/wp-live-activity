@@ -23,35 +23,21 @@
 class Wpla_Admin {
 
 	/**
-	 * The ID of this plugin.
+	 * The main configurations of the plugin
 	 *
 	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @access   private 
+	 * @var      array    the saved plugin configurations.
 	 */
-	private $plugin_name;
+	private  $config;
 
-	/**
-	 * The version of this plugin.
+    /**
+	 * Initialize the class and load configurations
 	 *
 	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
 	 */
-	private $version;
-
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
-	 */
-	public function __construct( $plugin_name, $version ) {
-
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
-
+	public function __construct( $config ) {
+		$this->config = $config;
 	}
 
 	/**
@@ -73,7 +59,7 @@ class Wpla_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpla-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->config->get('name'), plugin_dir_url( __FILE__ ) . 'css/wpla-admin.css', array(), $this->config->get('version'), 'all' );
 
 	}
 
@@ -83,6 +69,9 @@ class Wpla_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
+		// TODO:
+		// localize script and pass comments
+		// $wpla_comments = new Wpla_Comments();
 
 		/**
 		 * This function is provided for demonstration purposes only.
@@ -96,7 +85,7 @@ class Wpla_Admin {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wpla-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->config->get('name'), plugin_dir_url( __FILE__ ) . 'js/wpla-admin.js', array( 'jquery' ), $this->config->get('version'), false );
 
 	}
 

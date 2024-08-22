@@ -6,7 +6,6 @@
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       https://example.com
  * @since      1.0.0
  *
  * @package    Wpla
@@ -40,22 +39,13 @@ class Wpla {
 	protected $loader;
 
 	/**
-	 * The unique identifier of this plugin.
+	 * The main configurations of the plugin
 	 *
 	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+	 * @access   private 
+	 * @var      array    the saved plugin configurations.
 	 */
-	protected $plugin_name;
-
-	/**
-	 * The current version of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
-	 */
-	protected $version;
+	private  $config;
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -67,14 +57,18 @@ class Wpla {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		if ( defined( 'WPLA_VERSION' ) ) {
-			$this->version = WPLA_VERSION;
-		} else {
-			$this->version = '1.0.0';
-		}
-		$this->plugin_name = 'wpla';
-
 		$this->load_dependencies();
+
+		/**
+		 * init config class after it is required from the load_depencies() method
+		 * initialize dynamic config vaules from options
+		 */
+		$this->config = WPLA_Config::get_instance();
+
+		// set date & time configurations from site settings
+		$this->config->set('site_date_format', get_option('date_format'));
+		$this->config->set('site_time_format', get_option('time_format'));
+
 		$this->set_locale();
 		$this->define_admin_hooks();
 	}
@@ -82,21 +76,10 @@ class Wpla {
 	/**
 	 * Load the required dependencies for this plugin.
 	 *
-	 * Include the following files that make up the plugin:
-	 *
-	 * - Wpla_Loader. Orchestrates the hooks of the plugin.
-	 * - Wpla_i18n. Defines internationalization functionality.
-	 * - Wpla_Admin. Defines all hooks for the admin area.
-	 * - Wpla_Public. Defines all hooks for the public side of the site.
-	 *
-	 * Create an instance of the loader which will be used to register the hooks
-	 * with WordPress.
-	 *
 	 * @since    1.0.0
 	 * @access   private
 	 */
 	private function load_dependencies() {
-
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
@@ -104,17 +87,20 @@ class Wpla {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpla-loader.php';
 
 		/**
-		 * The class responsible for defining internationalization functionality
+		 * The class responsible for defining configurations, internationalization, comments, and users functionality
 		 * of the plugin.
 		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpla-config.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpla-i18n.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpla-comments.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpla-users.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpla-admin.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpla-comments-widget.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpla-users-widget.php';
 
 		/**
 		 * init the Wpla loader
@@ -132,11 +118,8 @@ class Wpla {
 	 * @access   private
 	 */
 	private function set_locale() {
-
 		$plugin_i18n = new Wpla_i18n();
-
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -147,18 +130,17 @@ class Wpla {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-		$name = $this->get_plugin_name();
-		$version = $this->get_version();
-
-		$wpla_admin = new Wpla_Admin( $name, $version );
+		$wpla_admin = new Wpla_Admin($this->config);
 		
 		$this->loader->add_action( 'admin_enqueue_scripts', $wpla_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $wpla_admin, 'enqueue_scripts' );
 
-		$wpla_comments_widget = new Wpla_Comments_Widget();
-		$this->loader->add_action( 'wp_dashboard_setup', $wpla_comments_widget, 'register_dashboard_widget' );
+		$wpla_comments_widget = new Wpla_Comments_Widget($this->config);
+		$this->loader->add_action( 'heartbeat_received', $wpla_comments_widget, 'heartbeat_comments_received_data', 10, 2 );
+		$this->loader->add_action( 'wp_dashboard_setup', $wpla_comments_widget, 'register_comments_dashboard_widget' );
 
-		
+		$wpla_users_widget = new Wpla_Users_Widget($this->config);
+		$this->loader->add_action( 'wp_dashboard_setup', $wpla_users_widget, 'register_users_dashboard_widget' );
 	}
 
 	/**
@@ -171,17 +153,6 @@ class Wpla {
 	}
 
 	/**
-	 * The name of the plugin used to uniquely identify it within the context of
-	 * WordPress and to define internationalization functionality.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The name of the plugin.
-	 */
-	public function get_plugin_name() {
-		return $this->plugin_name;
-	}
-
-	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since     1.0.0
@@ -189,16 +160,6 @@ class Wpla {
 	 */
 	public function get_loader() {
 		return $this->loader;
-	}
-
-	/**
-	 * Retrieve the version number of the plugin.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The version number of the plugin.
-	 */
-	public function get_version() {
-		return $this->version;
 	}
 
 }

@@ -2,7 +2,6 @@
 /**
  * Register a dashboard widget to display live users.
  *
- * @link       https://example.com
  * @since      1.0.0
  *
  * @package    Wpla
@@ -11,37 +10,58 @@
 
 class Wpla_Users_Widget {
 
+	/**
+	 * The main configurations of the plugin
+	 *
+	 * @since    1.0.0
+	 * @access   private 
+	 * @var      array    the saved plugin configurations.
+	 */
+	private  $config;
+
+    /**
+	 * Initialize the class and load configurations
+	 *
+	 * @since    1.0.0
+	 */
+	public function __construct( $config ) {
+		$this->config = $config;
+	}
+
+    public function heartbeat_received_users_data() {
+        if ( isset( $data['wpla_check_live_comments'] ) && $data['wpla_check_live_comments'] ) {
+            $comments_instance = new Wpla_Comments($this->config);
+            $response["wpla_live_comments"] = $comments_instance->fetch_recent_comments();
+        } else {
+            $response['wpla_live_comments'] = array();
+        }
+
+        return $response;
+    }
+
     /**
      * Register the widget with the WordPress dashboard.
      */
-    public function register_dashboard_widget() {
+    public function register_users_dashboard_widget() {
         wp_add_dashboard_widget(
-            'wpla_comments_widget',
-            __( 'Live Comments', 'wpla' ),
-            array( $this, 'wpla_display_comments_widget' )
+            'wpla_users_widget',
+            __( 'Live Users', 'wpla' ),
+            array( $this, 'display_users_dashboard_widget' )
         );
     }
 
     /**
      * Display the content of the widget.
      */
-    public function wpla_display_comments_widget() {
-        $comments_instance = new Wpla_Comments();
-        $comments = $comments_instance->fetch_recent_comments();
-
-        if ( ! empty( $comments ) ) {
-            echo '<ul>';
-            foreach ( $comments as $comment ) {
-                echo '<li>';
-                echo get_avatar( $comment, 32 ); // Display the avatar of the commenter.
-                echo '<strong>' . esc_html( $comment->comment_author ) . ':</strong> ';
-                echo esc_html( wp_trim_words( $comment->comment_content, 10 ) ); // Display a snippet of the comment.
-                echo '</li>';
-            }
-            echo '</ul>';
-        } else {
-            echo '<p>' . __( 'No recent comments found.', 'plugin-name' ) . '</p>';
-        }
+    public function display_users_dashboard_widget() {
+        ?>
+        <div id="wpla-users" class="wpla-users">
+            <div class="wpla-loader">
+                <span class="wpla-pulse wpla-green"></span>
+                <span class="wpla-loader-text">Loading users...</span>
+            </div>
+        </div>
+        <?php
     }
 
 }

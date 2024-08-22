@@ -2,19 +2,19 @@
 
 /**
  * The plugin bootstrap file
- * @link              https://example.com
+ * 
  * @since             1.0.0
  * @package           Wpla
  *
  * @wordpress-plugin
  * Plugin Name:       WP Live Activity
- * Plugin URI:        https://example.com
- * Description:       Desc...
+ * Plugin URI:        https://wordpress.org/plugins/wp-live-activity/
+ * Description:       WP Live Activity is a WordPress plugin that provides real-time updates and notifications to your admin dashboard. It instantly alerts you to important events like new comments, user registrations, and plugin updates without needing a page refresh. Customize notifications and get popup alerts for urgent updates. Manage user roles and track activity with historical logs. Stay informed and manage your site effortlessly with WP Live Activity.
  * Version:           1.0.0
- * Author:            Aamer
- * Author URI:        https://example.com/
- * License:           GPL-2.0+
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Author:            Aamer Shahzad
+ * Author URI:        https://wordpress.org/plugins/wp-live-activity/
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       wpla
  * Domain Path:       /languages
  */
@@ -25,52 +25,42 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
- */
-define( 'WPLA_VERSION', '1.0.1' );
-
-/**
- * The code that runs during plugin activation.
- * This action is documented in includes/class-wpla-activator.php
+ * Plugin activation/deactivation hooks
+ * The code that runs during plugin activation and deactivation.
+ * 
+ * This action is documented in includes/class-wpla-activator.php &
+ * This action is documented in includes/class-wpla-deactivator.php
  */
 function activate_wpla() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wpla-activator.php';
 	Wpla_Activator::activate();
 }
-
-/**
- * The code that runs during plugin deactivation.
- * This action is documented in includes/class-wpla-deactivator.php
- */
 function deactivate_wpla() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wpla-deactivator.php';
 	Wpla_Deactivator::deactivate();
 }
-
 register_activation_hook( __FILE__, 'activate_wpla' );
 register_deactivation_hook( __FILE__, 'deactivate_wpla' );
 
 /**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
+ * The core plugin class that is used to define
+ * internationalization, admin-specific hooks, and public-facing site hooks.
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-wpla.php';
 
 /**
  * Begins execution of the plugin.
  *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
  * @since    1.0.0
  */
 function run_wpla() {
-
 	$plugin = new Wpla();
 	$plugin->run();
-
 }
 run_wpla();
+
+function wpla_heartbeat_settings( $settings ) {
+    $settings['interval'] = 15; //Anything between 15-120
+    return $settings;
+}
+add_filter( 'heartbeat_settings', 'wpla_heartbeat_settings' );
