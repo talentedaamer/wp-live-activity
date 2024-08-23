@@ -2,14 +2,10 @@
 /**
  * WP Live Activity users
  */
-class WPLiveActivityComments {
-    private $cahce_key;
-    private $cache_expiry;
+class WPLiveActivityComments extends WplaBase {
 
-    public function __construct($cahceKey, $cacheExpiry) {
-        $this->cahce_key = $cahceKey;
-        $this->cache_expiry = $cacheExpiry;
-
+    public function __construct() {
+        parent::__construct();
         add_filter( 'heartbeat_received', array( $this, 'wpla_heartbeat_received_comments_callback' ), 10, 2 );
         add_action( 'wp_dashboard_setup', array( $this, 'wpla_register_comments_dashboard_widget' ) );
 	}
@@ -49,7 +45,7 @@ class WPLiveActivityComments {
     }
 
     public function wpla_get_comments() {
-        $live_comments = get_transient($this->cahce_key);
+        $live_comments = get_transient($this->get_cache_key_comments);
         if ($live_comments === false) {
             $number_comments = apply_filters( 'wpla_filter_number_comments', 5 );
             $args = array(
@@ -84,7 +80,7 @@ class WPLiveActivityComments {
                 }
             }
 
-            set_transient($this->cahce_key, $live_comments, $this->cache_expiry);
+            set_transient($this->cahce_key, $live_comments, $this->get_cache_comments_expiry);
         }
 
         return $live_comments;

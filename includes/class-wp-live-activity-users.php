@@ -2,28 +2,19 @@
 /**
  * WP Live Activity users
  */
-class WPLiveActivityUsers {
-    private $date_format;
-    private $time_format;
-
-	public function __construct($dateFormat, $timeFormat) {
-        $this->date_format = $dateFormat;
-        $this->time_format = $timeFormat;
-
+class WPLiveActivityUsers extends WplaBase {
+    
+    public function __construct() {
+        parent::__construct();
         add_filter( 'heartbeat_received', array( $this, 'wpla_heartbeat_received_users_callback' ), 10, 2 );
         add_action( 'wp_dashboard_setup', array( $this, 'wpla_register_users_dashboard_widget' ) );
 	}
 
     public function wpla_heartbeat_received_users_callback( $response, $data ) {
-        
         if ( isset( $data['active_user'] ) ) {
             $active_user = $data['active_user'];
             $current_time = current_time( 'timestamp' );
-
-            // Store the user's active state with a timestamp
             update_user_meta( $active_user, '_wpla_last_active', $current_time );
-
-            // Optionally, add active users to the response for debugging or display
             $response['active_user'][] = $active_user;
         }
 
@@ -35,7 +26,6 @@ class WPLiveActivityUsers {
         }
 
         return $response;
-
     }
 
     public function wpla_get_users() {
@@ -62,8 +52,8 @@ class WPLiveActivityUsers {
         if ( ! empty( $user_query->results ) ) {
             foreach ( $user_query->results as $user ) {
                 $last_active_timestamp = get_user_meta( $user->ID, '_wpla_last_active', true );
-                $last_active_date = date_i18n($this->date_format, $last_active_timestamp);
-                $last_active_time = date_i18n($this->time_format, $last_active_timestamp);
+                $last_active_date = date_i18n($this->get_date_format(), $last_active_timestamp);
+                $last_active_time = date_i18n($this->get_time_format(), $last_active_timestamp);
                 $last_active_datetime = $last_active_date . ' ' . $last_active_time;
                 $user_avatar_size = apply_filters( 'wpla_user_avatar_size', 50 );
                 $avatar = get_avatar( $user->ID, $user_avatar_size );
@@ -93,7 +83,7 @@ class WPLiveActivityUsers {
     public function wpla_register_users_dashboard_widget() {
         wp_add_dashboard_widget(
             'wpla_active_users_widget',
-            'Active Users',
+            '<div><span class="dashicons dashicons-admin-site"></span> Active Users</div>',
             array( $this, 'wpla_comments_dashboard_widget_content' ),
             null,
             null,
