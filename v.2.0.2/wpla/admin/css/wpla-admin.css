@@ -2,7 +2,7 @@
 /* online users table */
 .wpla-users table,
 .wpla-comments table {
-    font-size: 11px;
+    font-size: 12px;
     width: 100%;
 }
 .wpla-users table tr td,
@@ -10,27 +10,37 @@
     vertical-align: middle;
     padding: 5px;
 }
-
-wpla-comment-wrap
-    wpla-commentor-avatar
-    wpla-comment-info
-
-        wpla-comment-header
-            wpla-comment-author-name
-            wpla-comment-date
-
-        wpla-comment-content
-            wpla-comment-title
-            wpla-comment-content
-
 .wpla-users .wpla-user-wrap,
 .wpla-comments .wpla-comment-wrap {
     display: table;
+    position: relative;
+    width: 100%;
 }
+/* .wpla-comments .wpla-comment-actions {
+    opacity: 0;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: all ease-in-out 0.3s;
+}
+.wpla-comments .wpla-comment-wrap:hover .wpla-comment-actions {
+    opacity: 1;
+} */
 .wpla-commentor-avatar,
 .wpla-comment-info {
     display: table-cell;
     vertical-align: middle;
+}
+.wpla-commentor-avatar {
+    vertical-align: top;
 }
 .wpla-user-wrap .wpla-user-avatar {
     position: relative;
@@ -43,38 +53,37 @@ wpla-comment-wrap
 .wpla-user-avatar img,
 .wpla-commentor-avatar img {
     border: 1px solid #c3c4c7;
-    border-radius: 50%;
+    /* border-radius: 50%; */
     float: left;
 }
 .wpla-user-wrap .wpla-user-info,
 .wpla-comment-wrap .wpla-comment-info {
     padding-left: 10px;
+    width: 100%;
 }
-.wpla-comment-content .wpla-comment-content,
-.wpla-comment-content .wpla-comment-title {
+.wpla-comment-content .wpla-comment-content {
+    color: #000 !important;
     margin: 0;
 }
-.wpla-comment-content .wpla-comment-title {
-    font-weight: 600 !important;
+.wpla-comment-header {
+    margin: 0 0 4px;
 }
-
-/* .wpla-comment-header > strong:not(:last-child) {
-    margin-right: 10px;
-} */
-.wpla-comment-header .wpla-comment-author-name,
-.wpla-comment-header .wpla-comment-date {
-    display: inline-block;
+.wpla-comment-header .wpla-comment-title {
+    font-weight: 600 !important;
+    margin: 0 0 2px !important;
+    color: #444 !important;
 }
 .wpla-user-wrap .wpla-user-name,
 .wpla-comment-wrap .wpla-comment-author-name,
-.wpla-comment-wrap .wpla-comment-date {
+.wpla-comment-wrap .wpla-comment-date,
+.wpla-comment-wrap .wpla-seperator {
     /* display: block; */
-    font-weight: 500;
-    color: #0D314A;
+    font-weight: 600;
+    color: #888;
 }
 .wpla-user-wrap .wpla-user-name,
 .wpla-comment-wrap .wpla-comment-author-name {
-    font-size: 13px;
+    /* font-size: 13px; */
 }
 .wpla-user-wrap .wpla-user-name {
     display: block;

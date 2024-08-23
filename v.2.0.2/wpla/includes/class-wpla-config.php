@@ -37,8 +37,8 @@ class WPLA_Config {
             'version'               => '1.0.0',
             'cache_key_users'       => 'wpla_cached_users',
             'cache_key_comments'    => 'wpla_cached_comments',
-            'cache_expiry_users'    => 120,
-            'cache_expiry_comments' => 120,
+            'cache_expiry_users'    => 60,
+            'cache_expiry_comments' => 60,
             'site_date_format'      => 'F j, Y',
             'site_time_format'      => 'H:i',
         );
