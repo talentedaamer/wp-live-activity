@@ -20,38 +20,29 @@
  * @subpackage Admin_Session_Manager/public
  * @author     Aamer Shahzad <talentedaamer@gmail.com>
  */
-class Admin_Session_Manager_Public {
+class ASM_Public {
 
 	/**
-	 * The ID of this plugin.
+	 * The main configurations of the plugin
 	 *
 	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @access   private 
+	 * @var      array    the saved plugin configurations.
 	 */
+	private  $config;
+
 	private $plugin_name;
+	private $plugin_version;
 
-	/**
-	 * The version of this plugin.
+    /**
+	 * Initialize the class and load configurations
 	 *
 	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
 	 */
-	private $version;
-
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
-	 */
-	public function __construct( $plugin_name, $version ) {
-
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
-
+	public function __construct( $config ) {
+		$this->config = $config;
+		$this->plugin_name = $this->config->get('name');
+		$this->plugin_version = $this->config->get('version');
 	}
 
 	/**
@@ -73,7 +64,7 @@ class Admin_Session_Manager_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/asm-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/asm-public.css', array(), $this->plugin_version, 'all' );
 
 	}
 
@@ -96,7 +87,7 @@ class Admin_Session_Manager_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/asm-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/asm-public.js', array( 'jquery' ), $this->plugin_version, false );
 
 	}
 

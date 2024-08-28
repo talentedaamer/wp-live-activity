@@ -24,7 +24,7 @@
  * @subpackage Admin_Session_Manager/includes
  * @author     Aamer Shahzad <talentedaamer@gmail.com>
  */
-class Admin_Session_Manager_i18n {
+class ASM_i18n {
 
 
 	/**

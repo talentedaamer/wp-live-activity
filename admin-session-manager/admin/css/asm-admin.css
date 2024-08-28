@@ -1,4 +1,178 @@
-/**
- * All of the CSS for your admin-specific functionality should be
- * included in this file.
- */
+.asm-users {}
+.asm-users table {
+    border: none;
+    font-size: 12px;
+    width: 100%;
+}
+.asm-users table tr td {
+    vertical-align: middle;
+    padding: 5px;
+}
+.asm-users .asm-wrap {
+    display: table;
+    position: relative;
+    width: 100%;
+}
+.asm-wrap .asm-avatar,
+.asm-wrap .asm-info {
+    display: table-cell;
+    vertical-align: middle;
+}
+.asm-wrap .asm-info {
+    width: 100%;
+    padding-left: 10px;
+}
+.asm-wrap .asm-avatar {
+    vertical-align: top;
+    position: relative;
+}
+.asm-avatar .asm-status {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    z-index: 9;
+}
+.asm-avatar img {
+    border: 1px solid #c3c4c7;
+    float: left;
+}
+.asm-info .asm-header {
+    margin: 0 ;
+}
+.asm-info .asm-name,
+.asm-info .asm-date,
+.asm-info .asm-seperator {
+    font-weight: 600;
+    color: #888;
+}
+.asm-actions a:not(:last-child) {
+    margin-right: 5px;
+}
+.asm-users .asm-online-status > strong {
+    color: #fff;
+    line-height: 1;
+    display: inline-block;
+    border-radius: 3px;
+    padding: 2px 5px !important;
+}
+.asm-wrap .asm-actions {}
+.asm-actions .asm-buttons {
+    text-align: right;
+}
+
+/* loader */
+.asm-loader {
+    display: flex;
+    padding: 16px 8px;
+    flex-direction: column;
+    align-items: center;
+}
+.asm-loader .asm-loader-text {
+    font-weight: 500;
+    margin-top: 14px;
+    color: #0D314A;
+}
+
+.asm-status {
+    display: inline-block;
+    vertical-align: 1px;
+    width: 12px;
+    height: 12px;
+    background: #2AB27A;
+    color: transparent;
+    border-radius: 100%;
+    flex: 0 0 auto;
+}
+.asm-status.asm-red {
+    background: #e60000;
+}
+.asm-status.asm-orange {
+    background: #ff9900;
+}
+.asm-status.asm-green {
+    background: #2AB27A;
+}
+.asm-pulse {
+    position: relative;
+    display: inline-block;
+    vertical-align: 1px;
+    width: 16px;
+    height: 16px;
+    background: #2AB27A;
+    color: transparent;
+    border-radius: 100%;
+    flex: 0 0 auto;
+    animation: opacity-animation 1s linear;
+}
+.asm-pulse:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(42, 178, 122, 1);
+    border-radius: 100%;
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(2);
+    animation: pulse-animation 3s infinite;
+}
+.asm-pulse.asm-red,
+.asm-online-status .less-than-day,
+.asm-online-status .less-than-week,
+.asm-online-status .less-than-month,
+.asm-online-status .less-than-year,
+.asm-online-status .more-than-year {
+    background: #e60000;
+}
+.asm-pulse.asm-orange,
+.asm-online-status .less-than-hour {
+    background: #ff9900;
+}
+.asm-pulse.asm-green,
+.asm-online-status .just-now {
+    background: #2AB27A;
+}
+.asm-button {
+    line-height: 1 !important;
+    min-height: 26px !important;
+    padding: 2px 10px !important;
+}
+.asm-button .dashicons,
+.asm-button .dashicons-before:before{
+    transition: none;
+}
+.asm-button.reset {
+    color: #b32d2e;
+    background: #f6f7f7 !important;
+    text-decoration: none;
+    border-color: #b32d2e;
+    box-shadow: none;
+    background: 0 0;
+}
+.asm-button.reset:hover {
+    background: #b32d2e !important;
+    color: #fff;
+    border-color: #b32d2e;
+    box-shadow: 0 0 0 1px #b32d2e;
+}
+/* pulse animation */
+@keyframes opacity-animation {
+    0% {
+        opacity: 0;
+    }
+}
+@keyframes pulse-animation {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.8;
+    }
+    70% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(3);
+    }
+    to {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+}

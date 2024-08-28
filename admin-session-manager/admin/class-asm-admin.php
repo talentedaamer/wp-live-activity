@@ -20,38 +20,44 @@
  * @subpackage Admin_Session_Manager/admin
  * @author     Aamer Shahzad <talentedaamer@gmail.com>
  */
-class Admin_Session_Manager_Admin {
+class ASM_Admin {
 
 	/**
-	 * The ID of this plugin.
+	 * The main configurations of the plugin
 	 *
 	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @access   private 
+	 * @var      array    the saved plugin configurations.
+	 */
+	private  $config;
+
+	/**
+	 * Plugin name
+	 *
+	 * @since    1.0.0
+	 * @access   private 
+	 * @var      string    plugin name
 	 */
 	private $plugin_name;
 
 	/**
-	 * The version of this plugin.
+	 * Plugin version
 	 *
 	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
+	 * @access   private 
+	 * @var      string    plugin version number
 	 */
-	private $version;
+	private $plugin_version;
 
-	/**
-	 * Initialize the class and set its properties.
+    /**
+	 * Initialize the class and load configurations
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
-
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
-
+	public function __construct( $config ) {
+		$this->config = $config;
+		$this->plugin_name = $this->config->get('name');
+		$this->plugin_version = $this->config->get('version');
 	}
 
 	/**
@@ -62,18 +68,9 @@ class Admin_Session_Manager_Admin {
 	public function enqueue_styles() {
 
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Admin_Session_Manager_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Admin_Session_Manager_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
+		 * Main plugin stylesheet for the admin area.
 		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/asm-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/asm-admin.css', array(), $this->plugin_version, 'all' );
 
 	}
 
@@ -83,20 +80,28 @@ class Admin_Session_Manager_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
+		$asm_users = new ASM_Users( $this->config );
+		
+		/**
+		 * localize data for the asm-admin.js file
+		 */
+		$localized_data = array(
+            'current_user_id' => get_current_user_id(),
+            'asm_active_users' => $asm_users->fetch_recent_users(),
+            'nonce' => wp_create_nonce( 'asm_nonce' ),
+        );
 
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Admin_Session_Manager_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Admin_Session_Manager_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
+		 * Main plugin script file for the admin area.
 		 */
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/asm-admin.js', array( 'jquery' ), $this->plugin_version, false );
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/asm-admin.js', array( 'jquery' ), $this->version, false );
+		/**
+		 * localize the admin script
+		 * and pass the above localized_data to the script
+		 * localized data is available under wpla_params variable in wpla-admin.js
+		 */
+        wp_localize_script( $this->plugin_name, 'asm_params', $localized_data);
 
 	}
 

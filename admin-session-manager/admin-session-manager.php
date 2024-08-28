@@ -22,9 +22,14 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Currently plugin version.
+ * plugin defined constants
  */
+define( 'ASM_NAME', 'asm' );
 define( 'ASM_VERSION', '1.0.0' );
+define( 'ASM_SITE_DATE_FORMAT', get_option( 'date_format', 'F j, Y' ) );
+define( 'ASM_SITE_TIME_FORMAT', get_option( 'time_format', 'H:i' ) );
+define( 'ASM_CACHE_KEY_USERS', 'asm_cached_users' );
+define( 'ASM_CACHE_EXPIRY_USERS', 60 );
 
 /**
  * The code that runs during plugin activation.
@@ -32,7 +37,7 @@ define( 'ASM_VERSION', '1.0.0' );
  */
 function activate_admin_session_manager() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-asm-activator.php';
-	Admin_Session_Manager_Activator::activate();
+	ASM_Activator::activate();
 }
 register_activation_hook( __FILE__, 'activate_admin_session_manager' );
 
@@ -42,7 +47,7 @@ register_activation_hook( __FILE__, 'activate_admin_session_manager' );
  */
 function deactivate_admin_session_manager() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-asm-deactivator.php';
-	Admin_Session_Manager_Deactivator::deactivate();
+	ASM_Deactivator::deactivate();
 }
 register_deactivation_hook( __FILE__, 'deactivate_admin_session_manager' );
 

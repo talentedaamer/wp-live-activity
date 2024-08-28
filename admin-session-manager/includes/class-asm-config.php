@@ -33,12 +33,12 @@ class ASM_Config {
 
         // If no settings exist in the database, use default ones.
         $this->config = ! empty( $saved_config ) ? $saved_config : array(
-            'name'                  => 'wpla',
-            'version'               => '1.0.0',
-            'cache_key_users'       => 'wpla_cached_users',
-            'cache_expiry_users'    => 60,
-            'site_date_format'      => 'F j, Y',
-            'site_time_format'      => 'H:i',
+            'name'                  => defined( 'ASM_NAME' ) ? ASM_NAME : 'asm',
+            'version'               => defined( 'ASM_VERSION' ) ? ASM_VERSION : '1.0.0',
+            'cache_key_users'       => defined( 'ASM_CACHE_KEY_USERS' ) ? ASM_CACHE_KEY_USERS : 'asm_cached_users',
+            'cache_expiry_users'    => defined( 'ASM_CACHE_EXPIRY_USERS' ) ? ASM_CACHE_EXPIRY_USERS : 60,
+            'site_date_format'      => defined( 'ASM_SITE_DATE_FORMAT' ) ? ASM_SITE_DATE_FORMAT : 'F j, Y',
+            'site_time_format'      => defined( 'ASM_SITE_TIME_FORMAT' ) ? ASM_SITE_TIME_FORMAT : 'H:i',
         );
     }
 

@@ -30,6 +30,23 @@ class ASM_Users {
 		$this->config = $config;
 	}
 
+    public function heartbeat_users_received_data( $response, $data ) {
+        if ( isset( $data['asm_active_user_id'] ) ) {
+            $asm_active_user_id = $data['asm_active_user_id'];
+            $current_time = current_time( 'timestamp' );
+            update_user_meta( $asm_active_user_id, '_asm_last_active', $current_time );
+            $response['asm_active_user_ids'][] = $asm_active_user_id;
+        }
+
+        if ( isset( $data['asm_is_user_active'] ) && $data['asm_is_user_active'] ) {
+            $response["asm_active_users"] = $this->fetch_recent_users();
+        } else {
+            $response['asm_active_users'] = array();
+        }
+
+        return $response;
+    }
+
     /**
      * Fetch live users.
      * 
@@ -37,48 +54,44 @@ class ASM_Users {
      * @return array
      */
     public function fetch_recent_users() {
-        $live_users = get_transient($this->config->get('cache_key_users'));
-        if ($live_users === false) {
-            $current_timestamp = current_time( 'timestamp' );
-            $timeframe = 48 * 60 * 60; // For example, 60 minutes
-            $number_users = apply_filters( 'wpla_filter_number_users', 10 );
+        $current_timestamp = current_time( 'timestamp' );
+        // $live_users = get_transient($this->config->get('cache_key_users'));
+        // if ($live_users === false) {
+            $timeframe_diff = 48 * 60 * 60; // For example, 60 minutes
             $args = array(
-                // 'meta_query' => array(
-                //     array(
-                //         'key'     => '_wpla_last_active',
-                //         'value'   => $current_timestamp - $timeframe,
-                //         'compare' => '>=',
-                //         'type'    => 'NUMERIC'
-                //     )
-                // ),
+                'meta_query' => array(
+                    array(
+                        'key'     => '_asm_last_active',
+                        'value'   => $current_timestamp - $timeframe_diff,
+                        'compare' => '>=',
+                        'type'    => 'NUMERIC'
+                    )
+                ),
                 'fields'       => array('ID', 'display_name', 'user_email', 'user_login'),
                 'orderby'      => 'meta_value_num', // Order by numeric meta value
-                'meta_key'     => '_wpla_last_active', // Meta key for ordering
+                'meta_key'     => '_asm_last_active', // Meta key for ordering
                 'order'        => 'DESC',
-                'number'       => $number_users,
+                'number'       => apply_filters( 'asm_filter_number_users', 5 ),
             );
             $user_query = new WP_User_Query( $args );
 
             $live_users = array();
-
-            print_r($user_query->results);
-            // die("hi");
             if ( ! empty( $user_query->results ) ) {
                 foreach ( $user_query->results as $user ) {
                     /**
                      * get the stored timestap for the user
                      */
-                    $last_active_timestamp = get_user_meta( $user->ID, '_wpla_last_active', true );
+                    $last_active_timestamp = get_user_meta( $user->ID, '_asm_last_active', true );
 
                     /**
                      * convert timestamp to site date and time formats
                      */
-                    $last_active_datetime = $this->format_datetime($last_active_timestamp, $this->config);
+                    $last_active_datetime = $this->format_datetime( $last_active_timestamp );
 
                     /**
                      * get user avatar
                      */
-                    $avatar = get_avatar( $user->ID, apply_filters( 'wpla_user_avatar_size', 40 ) );
+                    $avatar = get_avatar( $user->ID, apply_filters( 'asm_user_avatar_size', 40 ) );
 
                     /**
                      * get profile edit link for the user
@@ -88,42 +101,64 @@ class ASM_Users {
                     /**
                      * time difference user was last logged in
                      */
-                    $time_ago = $this->time_ago($current_timestamp, $last_active_timestamp);
+                    $time_ago = $this->time_ago($last_active_timestamp);
+
+                    $end_session_url = add_query_arg( array(
+                        'action'  => 'asm_end_user_session',
+                        'user_id' => $user->ID,
+                        '_wpnonce' => wp_create_nonce( 'asm_end_session_nonce' ),
+                    ), admin_url() );
+
+                    $logged_in = $this->is_user_logged( $user->ID );
 
                     $live_users[] = array(
                         'ID' => $user->ID,
-                        'display_name' => $user->display_name,
-                        'user_email' => $user->user_email,
+                        'author' => $user->display_name,
+                        'author_email' => $user->user_email,
                         'user_login' => $user->user_login,
-                        'avatar' => $avatar,
-                        'date_format' => $this->date_format,
-                        'time_format' => $this->time_format,
-                        'last_active_date' => $last_active_date,
-                        'last_active_time' => $last_active_time,
+                        'author_avatar' => $avatar,
                         'last_active_timestamp' => $last_active_timestamp,
-                        'last_active_datetime' => $last_active_datetime,
+                        'last_active_datetime' => $last_active_timestamp,
+                        'date_time' => $last_active_datetime,
                         'time_ago' => $time_ago,
                         'edit_link' => $edit_link,
+                        'logged_in' => $logged_in,
+                        'end_user_session_link' => esc_url( $end_session_url )
                     );
                 }
             }
 
-            set_transient($this->config->get('cache_key_users'), $live_users, $this->config->get('cache_expiry_users'));
-        }
+            // set_transient($this->config->get('cache_key_users'), $live_users, $this->config->get('cache_expiry_users'));
+        // }
 
         return $live_users;
     }
 
-    public function format_datetime($timestamp, $config) {
-        $date = date_i18n($config->get('site_date_format'), strtotime($timestamp));
-        $time = date_i18n($config->get('site_time_format'), strtotime($timestamp));
+    public function format_datetime( $timestamp ) {
+        $date = date_i18n($this->config->get('site_date_format'), $timestamp);
+        $time = date_i18n($this->config->get('site_time_format'), $timestamp);
         return $date . ' ' . $time;
     }
 
-    public function time_ago($current_time, $past_time) {
-        // Calculate the time difference in seconds
-        $time_difference = $current_time - $past_time;
-        // Define time constants
+    public function is_user_logged( $user_id ) {
+        // Get the session tokens for the user
+        $sessions = WP_Session_Tokens::get_instance( $user_id );
+        
+        // Get all session tokens (if any)
+        $all_sessions = $sessions->get_all();
+        
+        // Check if there are any active sessions
+        if ( !empty( $all_sessions ) ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function time_ago($past_time) {
+        $current_timestamp = current_time( 'timestamp' );
+        $time_difference = $current_timestamp - $past_time;
+
         $seconds_in_minute = 60;
         $seconds_in_hour = 60 * 60;
         $seconds_in_day = 60 * 60 * 24;

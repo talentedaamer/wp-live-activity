@@ -20,7 +20,7 @@
  * @subpackage Admin_Session_Manager/includes
  * @author     Aamer Shahzad <talentedaamer@gmail.com>
  */
-class Admin_Session_Manager_Deactivator {
+class ASM_Deactivator {
 
 	/**
 	 * Short Description. (use period)
