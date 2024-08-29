@@ -88,6 +88,7 @@ class ASM_Admin {
 		$localized_data = array(
             'current_user_id' => get_current_user_id(),
             'asm_active_users' => $asm_users->fetch_recent_users(),
+			'is_current_user_admin' => current_user_can('administrator'),
             'nonce' => wp_create_nonce( 'asm_nonce' ),
         );
 

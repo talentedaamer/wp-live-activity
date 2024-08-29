@@ -156,10 +156,26 @@
     border-color: #b32d2e;
     box-shadow: 0 0 0 1px #b32d2e;
 }
+#asm-sync {
+    text-align: center;
+    animation: fade-animation 3s infinite;
+    margin: 0 0 10px;
+}
+.asm-rotate {
+    animation: rotate-animation 2s linear infinite;
+}
 /* pulse animation */
 @keyframes opacity-animation {
     0% {
         opacity: 0;
+    }
+}
+@keyframes fade-animation {
+    0%,100% {
+        opacity: 0
+    }
+    50% {
+        opacity: 1
     }
 }
 @keyframes pulse-animation {
@@ -174,5 +190,14 @@
     to {
         transform: translate(-50%, -50%) scale(0);
         opacity: 0;
+    }
+}
+
+@keyframes rotate-animation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }

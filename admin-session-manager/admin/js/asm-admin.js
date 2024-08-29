@@ -5,28 +5,33 @@
 	 * get current user id
 	 */
 	var current_user_id = asm_params.current_user_id;
+	var is_current_user_admin = asm_params.is_current_user_admin;
 
 	/**
 	 * initially load the users from localized data
 	 */
 	$(document).ready(function() {
-        var initial_users_table = asm_display_users(asm_params.asm_active_users);
-		if ( initial_users_table ) {
-			$('#asm-users').html(initial_users_table);
+		var user_widget_wrapper = document.getElementById('asm-users');
+		var sync_loader_display = document.getElementById('asm-sync');
+		
+		if ( user_widget_wrapper ) {
+			var initial_users_table = asm_display_users(asm_params.asm_active_users);
+			
+			if ( initial_users_table ) {
+				user_widget_wrapper.innerHTML = initial_users_table;
+			}
 		}
-
+		
 		var clear_session_btn = document.querySelectorAll('.asm-clear-session-btn');
 		if ( clear_session_btn ) {
 			clear_session_btn.forEach( function( button ) {
 				button.addEventListener('click', function(event) {
-					
-					event.preventDefault();
 					var confirmAction = confirm("Are you sure you want to terminate this session?");
 					
 					/**
 					 * if not confirmed prevent floowing the link
 					 */
-					if (!confirmAction) {
+					if ( !confirmAction ) {
 						event.preventDefault();
 						return;
 					}
@@ -36,27 +41,33 @@
 			});
 
 		}
-    });
-	
-	/**
-	 * Send users check to the data array of heartbeat
-	 * it will be used in heartbeat_received function
-	 */
-	$(document).on('heartbeat-send', function(e, data) {
-		data.asm_active_user_id = current_user_id
-        data.asm_is_user_active = true;
-	});
 
-	/**
-	 * heartbeat response function
-	 */
-	$(document).on('heartbeat-tick', function(e, data) {
-		console.log(">> asm_active_users", data.asm_active_users)
-		var display_users_table = asm_display_users(data.asm_active_users);
-		if ( display_users_table ) {
-			$('#asm-users').html(display_users_table);
+		/**
+		 * Send users check to the data array of heartbeat
+		 * it will be used in heartbeat_received function
+		 */
+		$(document).on('heartbeat-send', function(e, data) {
+			data.asm_active_user_id = current_user_id
+			data.asm_is_user_active = true;
+		});
+
+		/**
+		 * heartbeat response function
+		 */
+		if ( is_current_user_admin === "1" ) {
+			$(document).on('heartbeat-tick', function(e, data) {
+				if ( user_widget_wrapper ) {
+					sync_loader_display.style.display = 'none';
+					var display_users_table = asm_display_users(data.asm_active_users);
+					if ( display_users_table ) {
+						user_widget_wrapper.innerHTML = display_users_table;
+					}
+				}
+			});
 		}
-	});
+
+    });
+
 
 	function asm_display_users(data) {
         var userList = '';

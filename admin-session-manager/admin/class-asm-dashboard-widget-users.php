@@ -46,6 +46,11 @@ class ASM_Dashboard_Widget_Users {
      */
     public function display_users_dashboard_widget() {
         ?>
+        <div id="asm-sync">
+            <span class="asm-rotate dashicons dashicons-update"></span>
+            <span class="asm-loader-text">data syncing...</span>
+        </div>
+        
         <div id="asm-users" class="asm-users">
             <div class="asm-loader">
                 <span class="asm-pulse asm-green"></span>

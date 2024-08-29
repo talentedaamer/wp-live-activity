@@ -161,9 +161,11 @@ class Admin_Session_Manager {
 		$asm_users = new ASM_Users( $this->config );
 		$this->loader->add_action( 'heartbeat_received', $asm_users, 'heartbeat_users_received_data', 10, 2 );
 
-		$asm_users_widget = new ASM_Dashboard_Widget_Users( $this->config );
-		$this->loader->add_action( 'wp_dashboard_setup', $asm_users_widget, 'register_users_dashboard_widget' );
-		$this->loader->add_action( 'admin_init', $asm_users_widget, 'asm_handle_end_user_session' );
+		if ( is_admin() && current_user_can('administrator') ) {
+			$asm_users_widget = new ASM_Dashboard_Widget_Users( $this->config );
+			$this->loader->add_action( 'wp_dashboard_setup', $asm_users_widget, 'register_users_dashboard_widget' );
+			$this->loader->add_action( 'admin_init', $asm_users_widget, 'asm_handle_end_user_session' );
+		}
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
