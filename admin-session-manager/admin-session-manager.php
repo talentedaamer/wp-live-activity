@@ -58,6 +58,16 @@ register_deactivation_hook( __FILE__, 'deactivate_admin_session_manager' );
 require plugin_dir_path( __FILE__ ) . 'includes/class-asm.php';
 
 /**
+ * The filter method to adjust heartbeat frequency
+ * the default value is between 15-120 seconds
+ */
+function admin_session_manager_heartbeat_interval($settings) {
+    $settings['interval'] = 120;
+    return $settings;
+}
+add_filter('heartbeat_settings', 'admin_session_manager_heartbeat_interval');
+
+/**
  * Begins execution of the plugin.
  *
  * Since everything within the plugin is registered via hooks,

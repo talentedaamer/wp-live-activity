@@ -19,7 +19,7 @@
  * For more information, see the following discussion:
  * https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate/pull/123#issuecomment-28541913
  *
- * @link       https://example.com
+ * @link       https://github.com/talentedaamer/admin-session-manager
  * @since      1.0.0
  *
  * @package    Admin_Session_Manager
@@ -29,3 +29,9 @@
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
+
+/**
+ * clear users metadata on plugin uninstall
+ */
+global $wpdb;
+$wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key = '_asm_last_active'" );

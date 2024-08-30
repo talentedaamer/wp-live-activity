@@ -6,7 +6,9 @@
 }
 .asm-users table tr td {
     vertical-align: middle;
-    padding: 5px;
+}
+.asm-users table tr:not(:last-child) td {
+    border-bottom: 1px solid #e5e5e5;
 }
 .asm-users .asm-wrap {
     display: table;
@@ -39,14 +41,33 @@
 .asm-info .asm-header {
     margin: 0 ;
 }
+.asm-header .asm-online-status {
+    margin-bottom: 4px;
+}
 .asm-info .asm-name,
 .asm-info .asm-date,
 .asm-info .asm-seperator {
     font-weight: 600;
     color: #888;
+    display: block;
+}
+.asm-info .dashicons,
+.asm-info .dashicons-before:before {
+    height: 16px;
+    width: 16px;
+    font-size: 16px;
+    vertical-align: text-top;
+}
+.asm-info .asm-user-email .dashicons,
+.asm-info .asm-user-email .dashicons-before:before {
+    vertical-align: text-bottom;
+}
+.asm-actions a {
+    display: block !important;
+    text-align: center;
 }
 .asm-actions a:not(:last-child) {
-    margin-right: 5px;
+    margin-bottom: 5px;
 }
 .asm-users .asm-online-status > strong {
     color: #fff;
@@ -78,19 +99,19 @@
     vertical-align: 1px;
     width: 12px;
     height: 12px;
-    background: #2AB27A;
+    background: #00a32a;
     color: transparent;
     border-radius: 100%;
     flex: 0 0 auto;
 }
 .asm-status.asm-red {
-    background: #e60000;
+    background: #d63638;
 }
 .asm-status.asm-orange {
     background: #ff9900;
 }
 .asm-status.asm-green {
-    background: #2AB27A;
+    background: #00a32a;
 }
 .asm-pulse {
     position: relative;
@@ -98,7 +119,7 @@
     vertical-align: 1px;
     width: 16px;
     height: 16px;
-    background: #2AB27A;
+    background: #00a32a;
     color: transparent;
     border-radius: 100%;
     flex: 0 0 auto;
@@ -123,7 +144,7 @@
 .asm-online-status .less-than-month,
 .asm-online-status .less-than-year,
 .asm-online-status .more-than-year {
-    background: #e60000;
+    background: #d63638;
 }
 .asm-pulse.asm-orange,
 .asm-online-status .less-than-hour {
@@ -131,7 +152,7 @@
 }
 .asm-pulse.asm-green,
 .asm-online-status .just-now {
-    background: #2AB27A;
+    background: #00a32a;
 }
 .asm-button {
     line-height: 1 !important;
@@ -143,19 +164,22 @@
     transition: none;
 }
 .asm-button.reset {
-    color: #b32d2e;
-    background: #f6f7f7 !important;
+    background: #d63638 !important;
+    color: #fff;
     text-decoration: none;
-    border-color: #b32d2e;
+    border-color: #d63638;
     box-shadow: none;
     background: 0 0;
 }
-.asm-button.reset:hover {
-    background: #b32d2e !important;
+.asm-button.reset:hover,
+.asm-button.reset:active,
+.asm-button.reset:focus {
+    background: #c92d2f !important;
     color: #fff;
-    border-color: #b32d2e;
-    box-shadow: 0 0 0 1px #b32d2e;
+    border-color: #c92d2f;
+    box-shadow: none;
 }
+
 #asm-sync {
     text-align: center;
     animation: fade-animation 3s infinite;
@@ -163,6 +187,20 @@
 }
 .asm-rotate {
     animation: rotate-animation 2s linear infinite;
+}
+/* confirm dialog */
+.asm-confirm-dialog {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+.asm-confirm-dialog .asm-message-wrap {
+    margin-bottom: 15px;
+}
+.asm-confirm-dialog .asm-actions-wrap {
+    float: right;
+}
+.asm-confirm-dialog .asm-actions-wrap button:not(:last-child) {
+    margin-right: 5px;
 }
 /* pulse animation */
 @keyframes opacity-animation {

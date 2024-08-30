@@ -29,10 +29,7 @@ class ASM_Config {
      * Initializes the configurations
      */
     private function __construct() {
-        $saved_config = get_option( 'asm_plugin_config' );
-
-        // If no settings exist in the database, use default ones.
-        $this->config = ! empty( $saved_config ) ? $saved_config : array(
+        $this->config = array(
             'name'                  => defined( 'ASM_NAME' ) ? ASM_NAME : 'asm',
             'version'               => defined( 'ASM_VERSION' ) ? ASM_VERSION : '1.0.0',
             'cache_key_users'       => defined( 'ASM_CACHE_KEY_USERS' ) ? ASM_CACHE_KEY_USERS : 'asm_cached_users',
@@ -72,7 +69,6 @@ class ASM_Config {
      */
     public function set( $key, $value ) {
         $this->config[ $key ] = $value;
-        update_option( 'asm_plugin_config', $this->config );
     }
 
     /**

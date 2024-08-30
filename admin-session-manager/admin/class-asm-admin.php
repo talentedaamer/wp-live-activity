@@ -3,7 +3,7 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       https://example.com
+ * @link       https://github.com/talentedaamer/admin-session-manager
  * @since      1.0.0
  *
  * @package    Admin_Session_Manager
@@ -91,6 +91,11 @@ class ASM_Admin {
 			'is_current_user_admin' => current_user_can('administrator'),
             'nonce' => wp_create_nonce( 'asm_nonce' ),
         );
+
+		/**
+		 * custom confirmation dialog js
+		 */
+		// wp_enqueue_script( $this->plugin_name . 'confirm', plugin_dir_url( __FILE__ ) . 'js/asm-dialog.js', array(), $this->plugin_version, false );
 
 		/**
 		 * Main plugin script file for the admin area.

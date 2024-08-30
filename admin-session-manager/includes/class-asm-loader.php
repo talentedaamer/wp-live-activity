@@ -3,7 +3,7 @@
 /**
  * Register all actions and filters for the plugin
  *
- * @link       https://example.com
+ * @link       https://github.com/talentedaamer/admin-session-manager
  * @since      1.0.0
  *
  * @package    Admin_Session_Manager
